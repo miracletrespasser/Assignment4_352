@@ -11,6 +11,7 @@ class PerceptronModel(object):
         2D points.
         """
         self.w = nn.Parameter(1, dimensions)
+        self.batch_size = 1
 
     def get_weights(self):
         """
@@ -43,11 +44,10 @@ class PerceptronModel(object):
         """
         Train the perceptron until convergence.
         """
-        batch_size = 1
         error_loop = 1
         while error_loop:
             error_loop = 0
-            for x, y in dataset.iterate_once(batch_size):
+            for x, y in dataset.iterate_once(self.batch_size):
                 label = nn.as_scalar(y)
                 if self.get_prediction(x) != label:
                     error_loop = 1
@@ -73,6 +73,7 @@ class RegressionModel(object):
         self.b2 = nn.Parameter(1, 1)
         #we choose -0.01 because the final graph it produces is more smoother compare to other values
         self.learningrate=-0.01
+        self.batch_size=1
 
     def run(self, x):
         """
@@ -110,10 +111,9 @@ class RegressionModel(object):
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
-        batch_size=1
         pass_test= False
         while not pass_test:
-            for x, y in dataset.iterate_once(batch_size):
+            for x, y in dataset.iterate_once(self.batch_size):
                 #calculate the gradients
                 getloss=self.get_loss(x,y)
                 gradients = nn.gradients(getloss, [self.w1, self.b1,self.w2, self.b2])
@@ -148,6 +148,7 @@ class DigitClassificationModel(object):
         self.w2 = nn.Parameter(200, 10)
         self.b2 = nn.Parameter(1, 10)
         self.learning_rate = -0.1
+        self.batch_size = 100
         
 
     def run(self, x):
@@ -197,7 +198,6 @@ class DigitClassificationModel(object):
         """
         Trains the model.
         """
-        self.batch_size = 100
         passed = False
         while not passed:
             for x, y in dataset.iterate_once(self.batch_size):
