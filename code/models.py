@@ -45,10 +45,13 @@ class PerceptronModel(object):
         Train the perceptron until convergence.
         """
         error_loop = 1
+        # terminate when error_loop = 0
         while error_loop:
             error_loop = 0
+            # iterate throught the data and make the prediction
             for x, y in dataset.iterate_once(self.batch_size):
                 label = nn.as_scalar(y)
+                # if the prediction is wrong loop again, and update parameter
                 if self.get_prediction(x) != label:
                     error_loop = 1
                     parameter = self.get_weights()
@@ -125,7 +128,7 @@ class RegressionModel(object):
 
             #the test shall be passed with a loss less than 0.02
             pass_test= (nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y))) < 0.02)
-        return 
+        return
 
 class DigitClassificationModel(object):
     """
@@ -149,7 +152,7 @@ class DigitClassificationModel(object):
         self.b2 = nn.Parameter(1, 10)
         self.learning_rate = -0.1
         self.batch_size = 100
-        
+
 
     def run(self, x):
         """
@@ -201,10 +204,10 @@ class DigitClassificationModel(object):
         passed = False
         while not passed:
             for x, y in dataset.iterate_once(self.batch_size):
-                # run model, compute loss and gradients              
+                # run model, compute loss and gradients
                 loss = self.get_loss(x, y)
                 gradients = nn.gradients(loss, [self.w1, self.b1, self.w2, self.b2])
-                
+
                 # update the model using gradients
                 self.w1.update(gradients[0], self.learning_rate)
                 self.b1.update(gradients[1], self.learning_rate)
