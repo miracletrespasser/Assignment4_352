@@ -67,17 +67,14 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        self.batch_size = 1
         self.w1 = nn.Parameter(1, 200)
         self.b1 = nn.Parameter(1, 200)
         self.w2 = nn.Parameter(200, 1)
         self.b2 = nn.Parameter(1, 1)
         #self.w3 = nn.Parameter(1, 1)
         #self.b3 = nn.Parameter(1, 1)
-        
-        #after several trial for learning rate from positive 0.1 to negative 0.1
-        #we found negative 0.005 to be the best fit for this problem
-        self.learningrate=-0.005
+        #we choose -0.01 because the final graph it produces is more smoother compare to other values
+        self.learningrate=-0.01
     def run(self, x):
         """
         Runs the model for a batch of examples.
@@ -113,15 +110,17 @@ class RegressionModel(object):
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        batch_size=1
         pass_test= False
         while not pass_test:
-            for x, y in dataset.iterate_once(self.batch_size):
+            for x, y in dataset.iterate_once(batch_size):
+                #calculate the gradients
                 getloss=self.get_loss(x,y)
-                gradients = nn.gradients(getloss, [self.w1, self.w2,self.b1, self.b2])
+                gradients = nn.gradients(getloss, [self.w1, self.b1,self.w2, self.b2])
                 #update the bias and weights
                 self.w1.update(gradients[0], self.learningrate)
-                self.w2.update(gradients[1], self.learningrate)
-                self.b1.update(gradients[2], self.learningrate)
+                self.b1.update(gradients[1], self.learningrate)
+                self.w2.update(gradients[2], self.learningrate)
                 self.b2.update(gradients[3], self.learningrate)
 
             #the test shall be passed with a loss less than 0.02
