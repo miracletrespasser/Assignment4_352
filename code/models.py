@@ -71,8 +71,6 @@ class RegressionModel(object):
         self.b1 = nn.Parameter(1, 200)
         self.w2 = nn.Parameter(200, 1)
         self.b2 = nn.Parameter(1, 1)
-        #self.w3 = nn.Parameter(1, 1)
-        #self.b3 = nn.Parameter(1, 1)
         #we choose -0.01 because the final graph it produces is more smoother compare to other values
         self.learningrate=-0.01
 
@@ -91,7 +89,6 @@ class RegressionModel(object):
         relu = nn.ReLU(nn.AddBias(x1, self.b1))
         x2 = nn.Linear(relu, self.w2)
         f_x= nn.AddBias(x2, self.b2)
-        #x3 = nn.Linear(relu2,self.w3)
         #return the result of f(x) = relu(x * W1 + b1) * W2 + b2
         return f_x
 
@@ -150,8 +147,6 @@ class DigitClassificationModel(object):
         self.b1 = nn.Parameter(1, 200)
         self.w2 = nn.Parameter(200, 10)
         self.b2 = nn.Parameter(1, 10)
-        #self.w3 = nn.Parameter(1, 1)
-        #self.b3 = nn.Parameter(1, 1)
         self.learning_rate = -0.1
         
 
@@ -176,20 +171,11 @@ class DigitClassificationModel(object):
         # ---------------------------------------
         # LAYER 2
         # L2 = L1 * W2 + b2
-        # 3 layers: L2 = ReLU(L1 * W2 + b2)
         x2 = nn.Linear(L1, self.w2)
         L2 = nn.AddBias(x2, self.b2)
-        # comment line above and uncomment below for 3 layers
-        #L2 = nn.ReLU(nn.AddBias(x2, self.b2))
-        # ---------------------------------------
-        # LAYER 3
-        # L3 = L2 * W2 + b2
-        #x3 = nn.Linear(L2, self.w3)
-        #L3 = nn.AddBias(x3, self.b3)
         # ---------------------------------------
         # FINAL OUTPUT
         # f(x) = ReLU(x * W1 + b1) * W2 + b2
-        # f(x) = ReLU(ReLU(x * W1 + b1) * W2 + b2) * W3 + b3
         return L2
 
     def get_loss(self, x, y):
@@ -211,14 +197,11 @@ class DigitClassificationModel(object):
         """
         Trains the model.
         """
-        self.batch_size = 200 #int(len(dataset.x)/100)
+        self.batch_size = 100
         passed = False
         while not passed:
             for x, y in dataset.iterate_once(self.batch_size):
-                # run model and get predictions
-                #predicted_y = self.run(x)
-
-                # compute loss and gradients              
+                # run model, compute loss and gradients              
                 loss = self.get_loss(x, y)
                 gradients = nn.gradients(loss, [self.w1, self.b1, self.w2, self.b2])
                 
