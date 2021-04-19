@@ -60,10 +60,24 @@ class RegressionModel(object):
     numbers to real numbers. The network should be sufficiently large to be able
     to approximate sin(x) on the interval [-2pi, 2pi] to reasonable precision.
     """
+    '''
+    We tried for 2 layers and 3 layers, it turns out that 3 layers would allow the computation to 
+    go faster but can create ambiguity in some test cases, therefore we decide to do a 2 layer demonstration 
+    '''
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-
+        self.batch_size = 1
+        self.w1 = nn.Parameter(1, 200)
+        self.b1 = nn.Parameter(1, 200)
+        self.w2 = nn.Parameter(200, 1)
+        self.b2 = nn.Parameter(1, 1)
+        #self.w3 = nn.Parameter(1, 1)
+        #self.b3 = nn.Parameter(1, 1)
+        
+        #after several trial for learning rate from positive 0.1 to negative 0.1
+        #we found negative 0.005 to be the best fit for this problem
+        self.learningrate=-0.005
     def run(self, x):
         """
         Runs the model for a batch of examples.
@@ -74,7 +88,14 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
-
+        #Two layers implementation
+        x1 = nn.Linear(x, self.w1)
+        relu = nn.ReLU(nn.AddBias(x1, self.b1))
+        x2 = nn.Linear(relu, self.w2)
+        f_x= nn.AddBias(x2, self.b2)
+        #x3 = nn.Linear(relu2,self.w3)
+        #return the result of f(x) = relu(x * W1 + b1) * W2 + b2
+        return f_x
     def get_loss(self, x, y):
         """
         Computes the loss for a batch of examples.
@@ -86,12 +107,26 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
-
+        return nn.SquareLoss(self.run(x), y)
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        pass_test= False
+        while not pass_test:
+            for x, y in dataset.iterate_once(self.batch_size):
+                getloss=self.get_loss(x,y)
+                gradients = nn.gradients(getloss, [self.w1, self.w2,self.b1, self.b2])
+                #update the bias and weights
+                self.w1.update(gradients[0], self.learningrate)
+                self.w2.update(gradients[1], self.learningrate)
+                self.b1.update(gradients[2], self.learningrate)
+                self.b2.update(gradients[3], self.learningrate)
+
+            #the test shall be passed with a loss less than 0.02
+            pass_test= (nn.as_scalar(self.get_loss(nn.Constant(dataset.x), nn.Constant(dataset.y))) < 0.02)
+        return 
 
 class DigitClassificationModel(object):
     """
