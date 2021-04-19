@@ -88,7 +88,7 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
-        #Two layers implementation
+        #initilize the variables of f(x) = relu(x * W1 + b1) * W2 + b2
         x1 = nn.Linear(x, self.w1)
         relu = nn.ReLU(nn.AddBias(x1, self.b1))
         x2 = nn.Linear(relu, self.w2)
